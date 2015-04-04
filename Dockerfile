@@ -1,6 +1,4 @@
 FROM tcnksm/centos-ruby:2.1
-RUN yum install -y crontabs
-RUN chkconfig crond on
 #throw errors if Gemfile has been modified since Gemfile.lock
 RUN bundle config --global frozen 1
 RUN mkdir -p /usr/src/app
