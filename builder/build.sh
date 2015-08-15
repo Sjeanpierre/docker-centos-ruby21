@@ -15,7 +15,7 @@ mkdir -p /var/www/
 cp -r $APP_GIT_NAME /var/www/$REPO_NAME
 cd /var/www/$REPO_NAME
 #report status to service
-curl -X POST -d "host=$(echo $HOSTNAME)" -d "app=$APP_GIT_NAME" -d "pahse=prebuild" -d "contents=$(ls)" $NOTIFICATION_URL
+curl -X POST -d "host=$(echo $HOSTNAME)" -d "app=$APP_GIT_NAME" -d "phase=prebuild" -d "contents=$(ls)" $NOTIFICATION_URL
 
 #build phase
 #remove hard coded ruby version
@@ -24,12 +24,12 @@ sed -i '/^ruby/d' ./Gemfile
 bundle install --deployment --jobs 2 --retry 2
 cp config/database.yml.tmpl config/database.yml
 bundle exec rake assets:precompile
-curl -X POST -d "host=$(echo $HOSTNAME)" -d "app=$APP_GIT_NAME" -d "pahse=prepackage" $NOTIFICATION_URL
+curl -X POST -d "host=$(echo $HOSTNAME)" -d "app=$APP_GIT_NAME" -d "phase=prepackage" $NOTIFICATION_URL
 
 #package
 VERSION=`echo $TAR_URL | rev | cut -d'/' -f1 | rev`
 cd ..
 fpm -s dir -t rpm --prefix /var/www --name $REPO_NAME --version $VERSION $REPO_NAME
-curl -X POST -d "host=$(echo $HOSTNAME)" -d "app=$APP_GIT_NAME" -d "pahse=postpackage" -d "contents=$(ls *.rpm)" $NOTIFICATION_URL
+curl -X POST -d "host=$(echo $HOSTNAME)" -d "app=$APP_GIT_NAME" -d "phase=postpackage" -d "contents=$(ls *.rpm)" $NOTIFICATION_URL
 
 
